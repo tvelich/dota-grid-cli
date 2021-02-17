@@ -1,0 +1,58 @@
+name: CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  ci:
+    name: Continuous Integration
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 15.x]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Get NPM Package Version
+      id: npm-package-version
+      run: echo "::set-output name=npm-package-version::$(cat package.json | jq --raw-output .version)"
+    - name: Setup Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install
+      run: npm ci
+    - name: ESLint
+      run: npm run eslint
+    - name: Type Check
+      run: npm run type-check
+    - name: Prettier Check
+      run: npm run prettier-check
+    - name: Build
+      run: npm run build
+    - name: Test
+      run: npm test
+    - name: Bash Smoke Test
+      shell: bash
+      run: |
+        npm pack
+        npm install --global dota-grid-cli-${{ steps.npm-package-version.outputs.npm-package-version }}.tgz
+        dota-grid-cli --help
+    - name: PowerShell Smoke Test
+      if: ${{ matrix.os == 'windows-latest' }}
+      shell: pwsh
+      run: |
+        npm pack
+        npm install --global dota-grid-cli-${{ steps.npm-package-version.outputs.npm-package-version }}.tgz
+        dota-grid-cli --help
+    - name: Command Prompt Smoke Test
+      if: ${{ matrix.os == 'windows-latest' }}
+      shell: cmd
+      run: >
+        npm pack &&
+        npm install --global dota-grid-cli-${{ steps.npm-package-version.outputs.npm-package-version }}.tgz &&
+        dota-grid-cli --help
