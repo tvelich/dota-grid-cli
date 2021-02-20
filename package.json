@@ -1,6 +1,6 @@
 {
   "name": "dota-grid-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A cli for modifying DotA grid config files",
   "bin": {
     "dota-grid-cli": "./bin/index.js"

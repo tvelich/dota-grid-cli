@@ -16,7 +16,7 @@ You'll need to install npm to use this tool. You can find the download for your 
 After you install, open your command prompt/terminal on your system and type:
 
 ```
-npm i -g tvelich/dota-grid-cli
+npm i -g dota-grid-cli
 ```
 
 After this you should be all set to use it!
